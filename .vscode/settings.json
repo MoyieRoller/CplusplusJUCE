@@ -1,3 +1,4 @@
 {
-    "lldb-dap.executable-path": "/opt/homebrew/opt/lldb/bin/lldb-dap"
+    "lldb-dap.executable-path": "/opt/homebrew/opt/lldb/bin/lldb-dap",
+    "cmake.sourceDirectory": "/Users/moyie/Documents/Git/CplusplusJUCE/setup"
 }

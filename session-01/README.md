@@ -1,6 +1,6 @@
 # Session 01 — First program: edit, build, run
 
-Start with the supplied `source/main.cpp`. It contains an empty `main` function. Work in your own copy of the course files; keep the teaching checkout unchanged.
+This teaching checkout includes the worked solution in `source/main.cpp`. The in-class exercises below describe the steps from an empty `main` function; use the starter state provided for class before following them. Follow the Git workflow agreed in class when keeping your changes.
 
 ## What you will learn
 

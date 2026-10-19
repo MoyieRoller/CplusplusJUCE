@@ -1,6 +1,6 @@
 # Session 02 — Types, arithmetic, and conditions
 
-A supplied starting point, not a completed exercise. All tasks use only this session’s files.
+This teaching checkout includes the worked solution in `source/main.cpp`, including the BPM classification from the practice task. The tasks below describe how to build it up from the starter state provided for class. All tasks use only this session’s files.
 
 ## What you will learn
 

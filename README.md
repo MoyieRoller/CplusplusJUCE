@@ -6,6 +6,8 @@ A practical introduction to C++ and JUCE for Music Informatics students. The cou
 
 We will set up VS Code and the C++ tools together in class. Bring your laptop. Use the [setup sheet](setup/README.md) during class, then begin with [Session 01](session-01/README.md). The full list of planned topics is in the [student roadmap](COURSE_PLAN.md).
 
+Use the [Git introduction](GIT_INTRO.md) to review cloning, branches, staging, commits, and sharing your work.
+
 JUCE itself is introduced later, so you do not need to install it before the first class.
 
 ## How the course works

@@ -1,6 +1,6 @@
 # Session 03 — Loops and small collections
 
-A supplied starting point, not a completed exercise. All tasks use only this session’s files.
+The checked-in `source/main.cpp` is one worked solution to the tasks below. Use the task list to build through each concept during class.
 
 ## What you will learn
 

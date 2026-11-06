@@ -4,3 +4,5 @@
 
 double beatDurationMs(double bpm);
 
+double twoBeatsMs(double bpm);
+

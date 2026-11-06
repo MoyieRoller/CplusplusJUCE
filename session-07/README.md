@@ -67,6 +67,19 @@ Configure on Windows (VS Code launched from a Developer Command Prompt):
 cmake -S . -B build -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Debug
 ```
 
+### What the configure options mean
+
+- `-S .` selects the source folder containing `CMakeLists.txt`. The dot means the current folder.
+- `-B build` selects the folder for generated build files and compiled output. CMake creates it if necessary.
+- `-G` selects the **generator**: the format of build files CMake produces. `"Unix Makefiles"` generates files for `make` on macOS/Linux; `"NMake Makefiles"` generates files for `nmake` on Windows. Quotes keep the generator name, including its space, together as one argument. CMake prepares the build rules; the selected build tool uses them to run the compiler and linker. Use a fresh build folder when switching generators.
+- `-DCMAKE_BUILD_TYPE=Debug` sets the CMake variable `CMAKE_BUILD_TYPE` to `Debug`. Here, `-D` means “set a CMake cache variable”; it is not a C++ preprocessor definition. CMake remembers the value in the build folder. Debug builds include information for breakpoints and inspecting variables and normally disable compiler optimization, making stepping through the code easier to follow.
+
+The two Makefile generators above select one build type when configuring. Other generators, such as Visual Studio and Xcode, support multiple configurations and select Debug when building with `cmake --build build --config Debug` instead.
+
+See the [CMake tutorial on generators and build types](https://cmake.org/cmake/help/latest/guide/tutorial/Before%20You%20Begin.html) for more detail.
+
+### Build and run the configured project
+
 Build on all platforms:
 
 ```bash

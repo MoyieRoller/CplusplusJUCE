@@ -5,21 +5,84 @@
       "label": "Build selected session",
       "type": "process",
       "command": "python3",
-      "args": ["${workspaceFolder}/.vscode/build_session.py", "${input:session}"],
+      "args": [
+        "${workspaceFolder}/.vscode/build_session.py",
+        "${input:session}",
+        "--launch-directory",
+        "${workspaceFolder}/.vscode/launch-bin/console"
+      ],
       "windows": {
         "command": "py",
-        "args": ["-3", "${workspaceFolder}/.vscode/build_session.py", "${input:session}"],
-        "problemMatcher": ["$msCompile"]
+        "args": [
+          "-3",
+          "${workspaceFolder}/.vscode/build_session.py",
+          "${input:session}",
+          "--launch-directory",
+          "${workspaceFolder}/.vscode/launch-bin/console"
+        ],
+        "problemMatcher": [
+          "$msCompile"
+        ]
       },
-      "options": { "cwd": "${workspaceFolder}" },
-      "problemMatcher": ["$gcc"]
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "focus": true
+      }
+    },
+    {
+      "label": "Build selected JUCE plugin",
+      "type": "process",
+      "command": "python3",
+      "args": [
+        "${workspaceFolder}/.vscode/build_session.py",
+        "${input:pluginSession}",
+        "--host",
+        "${input:pluginHost}",
+        "--format",
+        "${input:pluginFormat}",
+        "--launch-directory",
+        "${workspaceFolder}/.vscode/launch-bin/plugin"
+      ],
+      "windows": {
+        "command": "py",
+        "args": [
+          "-3",
+          "${workspaceFolder}/.vscode/build_session.py",
+          "${input:pluginSession}",
+          "--host",
+          "${input:pluginHost}",
+          "--format",
+          "${input:pluginFormat}",
+          "--launch-directory",
+          "${workspaceFolder}/.vscode/launch-bin/plugin"
+        ],
+        "problemMatcher": [
+          "$msCompile"
+        ]
+      },
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "focus": true
+      }
     }
   ],
   "inputs": [
     {
       "id": "session",
       "type": "pickString",
-      "description": "Select setup or a course session to build and debug",
+      "description": "Select setup or a console session to build and debug",
       "options": [
         "setup",
         "session-01",
@@ -33,6 +96,40 @@
         "session-09"
       ],
       "default": "setup"
+    },
+    {
+      "id": "pluginSession",
+      "type": "pickString",
+      "description": "Select a JUCE plugin session",
+      "options": [
+        "session-10"
+      ],
+      "default": "session-10"
+    },
+    {
+      "id": "pluginHost",
+      "type": "pickString",
+      "description": "Application to launch",
+      "options": [
+        "Standalone",
+        "REAPER",
+        "Cubase 15",
+        "Logic",
+        "Pro Tools Developer"
+      ],
+      "default": "Standalone"
+    },
+    {
+      "id": "pluginFormat",
+      "type": "pickString",
+      "description": "Plugin target to build",
+      "options": [
+        "App",
+        "VST3",
+        "AU",
+        "AAX"
+      ],
+      "default": "App"
     }
   ]
 }

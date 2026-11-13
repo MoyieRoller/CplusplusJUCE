@@ -55,3 +55,27 @@ cmake --build build
 Run on macOS/Linux: `./build/bin/main`. On Windows: `.\build\bin\main.exe`.
 
 Run only after a successful build. If you move the project, use a fresh build directory. For lesson 5 onwards, select **Lesson — your platform** in Run and Debug, then F5; the supplied task builds before launch. Save changes first. C++/debugger extensions are described in the setup sheet.
+
+## Class concepts
+
+### A class as a blueprint
+
+A class defines a type that groups data (member variables) and behavior (member functions, also called methods). Each `Tempo` object is a separate instance with its own `bpm` value. Both instances use the same method definitions.
+
+### Construction and destruction
+
+The constructor has the class name and no return type. In `Tempo first(120.0)`, `Tempo` is the type, `first` is the object name, and `120.0` is passed to the constructor. The member initializer list `: bpm(initialBpm)` initializes `bpm` before the constructor body runs. Members are initialized in their declaration order in the class, regardless of their order in the initializer list.
+
+`explicit` prevents a number from being implicitly converted into a `Tempo` object. Direct construction such as `Tempo first(120.0)` still works.
+
+The destructor is named `~Tempo` and runs when an object's lifetime ends. The example shows an empty destructor for illustration; it can be omitted because this class needs no custom cleanup.
+
+### Encapsulation and abstraction
+
+`public` members form the interface that other code can use. `private` members are accessible to the class's own member functions (and friends), but cannot be accessed directly from `main`. Keeping `bpm` private lets callers work through methods such as `getBpm()` without depending on how the value is stored. This separation of interface and implementation supports abstraction.
+
+The `const` after `getBpm()` means the method cannot modify ordinary member data and can also be called on a const `Tempo` object.
+
+### Inheritance: a later topic
+
+Inheritance lets a class derive from another class. `protected` members are accessible within the class and derived classes (and their friends). This example uses no inheritance and needs only `public` and `private`; inheritance is outside this session's exercises.

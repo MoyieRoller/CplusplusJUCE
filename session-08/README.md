@@ -1,6 +1,6 @@
 # Session 08 — One small class
 
-A supplied starting point, not a completed exercise. All tasks use only this session’s files.
+The worked solution in `source/main.cpp` covers the in-class tasks, checkpoint, and after-class practice.
 
 ## What you will learn
 
@@ -64,7 +64,7 @@ A class defines a type that groups data (member variables) and behavior (member 
 
 ### Construction and destruction
 
-The constructor has the class name and no return type. In `Tempo first(120.0)`, `Tempo` is the type, `first` is the object name, and `120.0` is passed to the constructor. The member initializer list `: bpm(initialBpm)` initializes `bpm` before the constructor body runs. Members are initialized in their declaration order in the class, regardless of their order in the initializer list.
+The constructor has the class name and no return type. In `Tempo first;`, `Tempo` is the type and `first` is the object name. Omitting the argument uses the constructor’s default value of 120 BPM. In `Tempo second(60.0);`, the argument supplies 60 BPM. The member initializer list `: bpm(initialBpm)` initializes `bpm` before the constructor body runs. Members are initialized in their declaration order in the class, regardless of their order in the initializer list.
 
 `explicit` prevents a number from being implicitly converted into a `Tempo` object. Direct construction such as `Tempo first(120.0)` still works.
 

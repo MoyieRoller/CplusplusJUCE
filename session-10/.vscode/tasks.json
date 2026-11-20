@@ -1,0 +1,124 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Configure lesson",
+      "type": "process",
+      "command": "cmake",
+      "args": [
+        "-S",
+        ".",
+        "-B",
+        "build",
+        "-G",
+        "Unix Makefiles",
+        "-DCMAKE_BUILD_TYPE=Debug"
+      ],
+      "windows": {
+        "args": [
+          "-S",
+          ".",
+          "-B",
+          "build",
+          "-G",
+          "NMake Makefiles",
+          "-DCMAKE_BUILD_TYPE=Debug"
+        ]
+      },
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Build lesson",
+      "type": "process",
+      "command": "cmake",
+      "args": [
+        "--build",
+        "build"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "dependsOn": "Configure lesson",
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "windows": {
+        "problemMatcher": [
+          "$msCompile"
+        ]
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Prepare plugin launch",
+      "type": "process",
+      "command": "python3",
+      "args": [
+        "${workspaceFolder}/../.vscode/build_session.py",
+        "session-10",
+        "--host",
+        "${input:pluginHost}",
+        "--format",
+        "${input:pluginFormat}",
+        "--launch-directory",
+        "${workspaceFolder}/.vscode/launch-bin"
+      ],
+      "windows": {
+        "command": "py",
+        "args": [
+          "-3",
+          "${workspaceFolder}/../.vscode/build_session.py",
+          "session-10",
+          "--host",
+          "${input:pluginHost}",
+          "--format",
+          "${input:pluginFormat}",
+          "--launch-directory",
+          "${workspaceFolder}/.vscode/launch-bin"
+        ],
+        "problemMatcher": [
+          "$msCompile"
+        ]
+      },
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ]
+    }
+  ],
+  "inputs": [
+    {
+      "id": "pluginHost",
+      "type": "pickString",
+      "description": "Session 10 — app or host",
+      "options": [
+        "Standalone",
+        "REAPER",
+        "Cubase 15",
+        "Logic",
+        "Pro Tools Developer"
+      ],
+      "default": "Standalone"
+    },
+    {
+      "id": "pluginFormat",
+      "type": "pickString",
+      "description": "Session 10 — format",
+      "options": [
+        "App",
+        "VST3",
+        "AU",
+        "AAX"
+      ],
+      "default": "App"
+    }
+  ]
+}

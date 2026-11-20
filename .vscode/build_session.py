@@ -13,6 +13,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
+import plugin_launcher
+
 
 ROOT = Path(__file__).resolve().parent.parent
 PLATFORM = "windows" if sys.platform == "win32" else "osx" if sys.platform == "darwin" else "linux"
@@ -121,12 +123,24 @@ def selected_launch_program(session_dir: Path) -> Path:
     return Path(raw_program)
 
 
-def copy_debug_artifacts(source: Path, destination: Path) -> None:
+def prepare_debug_target(source: Path, destination: Path) -> None:
     if not source.is_file():
         fail(f"The build task succeeded, but the configured executable was not found: {source}")
 
     destination.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(source, destination)
+    # Remove the previous selection without touching its original executable.
+    if destination.is_symlink():
+        destination.unlink()
+
+    if sys.platform != "win32":
+        # Debug the original build product. The macOS DAP wrapper resolves this
+        # selection link before launch, preserving both bundle identity and symbols.
+        if destination.exists():
+            destination.unlink()
+        destination.symlink_to(source.resolve())
+    else:
+        # Windows symlinks require Developer Mode or elevated privileges.
+        shutil.copy2(source, destination)
 
     source_pdb = source.with_suffix(".pdb")
     destination_pdb = destination.with_suffix(".pdb")
@@ -149,25 +163,39 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("session", help="setup or a session folder, for example session-07")
     parser.add_argument("--dry-run", action="store_true", help="show the session tasks without running them")
+    parser.add_argument('--format', choices=("App", *plugin_launcher.FORMATS))
+    parser.add_argument('--host', choices=("Standalone", *plugin_launcher.APPS))
+    parser.add_argument('--aax-sdk', help='AAX SDK directory; remembered in the CMake cache')
+    parser.add_argument('--launch-directory', type=Path, help='Override the prepared debugger executable directory')
     arguments = parser.parse_args()
 
-    if arguments.session != "setup" and not re.fullmatch(r"session-0[1-9]", arguments.session):
-        fail("The root launcher currently supports setup and session-01 through session-09.")
+    if arguments.session != "setup" and not re.fullmatch(r"session-(?:0[1-9]|[1-9][0-9]+)", arguments.session):
+        fail("Choose setup or an existing session folder, for example session-10.")
 
     session_dir = ROOT / arguments.session
     if not session_dir.is_dir():
         fail(f"Session folder does not exist: {session_dir}")
 
-    tasks_data = load_json(session_dir / ".vscode" / "tasks.json")
-    tasks = tasks_data.get("tasks", [])
-    build_task = "Build setup" if arguments.session == "setup" else "Build lesson"
-    run_task(build_task, tasks, session_dir, arguments.dry_run, set(), set())
+    is_plugin_session = arguments.session != "setup" and int(arguments.session.removeprefix("session-")) >= 10
+    if is_plugin_session:
+        format_name, host = plugin_launcher.select(arguments.format, arguments.host)
+        source = plugin_launcher.prepare(session_dir, format_name, host,
+                                         arguments.aax_sdk, arguments.dry_run)
+    else:
+        if arguments.format or arguments.host or arguments.aax_sdk:
+            fail("Plugin options apply only to JUCE plugin sessions (10 and later).")
+        tasks_data = load_json(session_dir / ".vscode" / "tasks.json")
+        tasks = tasks_data.get("tasks", [])
+        build_task = "Build setup" if arguments.session == "setup" else "Build lesson"
+        run_task(build_task, tasks, session_dir, arguments.dry_run, set(), set())
+        source = selected_launch_program(session_dir)
 
     if not arguments.dry_run:
-        source = selected_launch_program(session_dir)
         suffix = ".exe" if os.name == "nt" else ""
-        destination = ROOT / ".vscode" / "launch-bin" / f"main{suffix}"
-        copy_debug_artifacts(source, destination)
+        category = "plugin" if is_plugin_session else "console"
+        launch_directory = arguments.launch_directory or ROOT / ".vscode" / "launch-bin" / category
+        destination = launch_directory / f"main{suffix}"
+        prepare_debug_target(source, destination)
         print(f"Ready to debug: {destination}")
     return 0
 
@@ -175,6 +203,6 @@ def main() -> int:
 if __name__ == "__main__":
     try:
         raise SystemExit(main())
-    except RuntimeError as error:
+    except (RuntimeError, OSError, subprocess.CalledProcessError) as error:
         print(f"Build launcher error: {error}", file=sys.stderr)
         raise SystemExit(1)

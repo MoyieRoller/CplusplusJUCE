@@ -20,4 +20,6 @@ if [ ! -x "$lldb_dap" ]; then
     exit 1
 fi
 
-exec "$lldb_dap" "$@"
+# Resolve our launcher symlink in the DAP request before macOS starts the app.
+script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+exec python3 "$script_dir/lldb_dap_resolve_program.py" "$lldb_dap" "$@"

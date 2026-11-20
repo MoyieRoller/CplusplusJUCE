@@ -5,7 +5,7 @@
       "name": "Build and launch a course session — macOS",
       "type": "lldb-dap",
       "request": "launch",
-      "program": "${workspaceFolder}/.vscode/launch-bin/main",
+      "program": "${workspaceFolder}/.vscode/launch-bin/console/main",
       "args": [],
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "Build selected session",
@@ -17,7 +17,7 @@
       "name": "Build and launch a course session — Linux",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/.vscode/launch-bin/main",
+      "program": "${workspaceFolder}/.vscode/launch-bin/console/main",
       "args": [],
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "Build selected session",
@@ -29,10 +29,47 @@
       "name": "Build and launch a course session — Windows",
       "type": "cppvsdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/.vscode/launch-bin/main.exe",
+      "program": "${workspaceFolder}/.vscode/launch-bin/console/main.exe",
       "args": [],
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "Build selected session",
+      "console": "integratedTerminal"
+    },
+    {
+        "name": "------"
+    },
+    {
+      "name": "Build and Launch a JUCE Plugin — macOS",
+      "type": "lldb-dap",
+      "request": "launch",
+      "program": "${workspaceFolder}/.vscode/launch-bin/plugin/main",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "Build selected JUCE plugin",
+      "debugAdapterExecutable": "${workspaceFolder}/.vscode/lldb-dap.sh",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "name": "Build and Launch a JUCE Plugin — Linux",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/.vscode/launch-bin/plugin/main",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "Build selected JUCE plugin",
+      "MIMode": "gdb",
+      "miDebuggerPath": "/usr/bin/gdb",
+      "externalConsole": false
+    },
+    {
+      "name": "Build and Launch a JUCE Plugin — Windows",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/.vscode/launch-bin/plugin/main.exe",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "Build selected JUCE plugin",
       "console": "integratedTerminal"
     }
   ]

@@ -15,7 +15,7 @@ We will set up VS Code and the C++ tools together in class. You do not need to i
 - **Session 07 — CMake and Git:** build a multi-file project with CMake, observe that a change to one source file does not require rebuilding every object file, and use Git to review and manage your own changes.
 - **Session 08 — One small class:** define a class with private data and public methods, then create and use instances.
 - **Session 09 — References, pointers, and lifetime:** compare values, references, and pointers; follow object lifetimes and automatic ownership.
-- **Session 10 — JUCE Core as a dependency:** add JUCE to a CMake project and use a JUCE Core class in a console program.
+- **Session 10 — First JUCE plugin with CMake:** set up a minimal VST3/Standalone plugin, generate the JUCE header, and paint “Hello JUCE”.
 - **Session 11 — First JUCE window:** follow application startup, create a window, and identify the main component.
 - **Session 12 — Components and layout:** add controls and position them as the window changes size.
 - **Session 13 — Callbacks and a working calculator:** connect a control to a calculation and update what the user sees.
@@ -30,4 +30,4 @@ We will set up VS Code and the C++ tools together in class. You do not need to i
 - Use the Git workflow agreed in class for your experience level; this may be a personal repository or a branch in the course repository. Your implementation does not need to match the teacher's line for line.
 - Build and run your program to check its behavior. A successful build alone does not prove the result is correct.
 
-The final application will be intentionally modest: one window, one or two controls, and one result. Audio processing and plugin development are outside this course's scope.
+The final application will be intentionally modest: one window, one or two controls, and one result. Session 10 introduces plugin setup; audio processing is outside the required scope.

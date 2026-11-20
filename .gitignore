@@ -6,8 +6,7 @@ instructor/
 # Deferred session materials kept locally until they are needed
 /temp/
 
-# Local copy of the course's pinned JUCE dependency
-/dependencies/JUCE/
+# JUCE is tracked as a submodule in dependencies/JUCE.
 
 # OS metadata and editor temporary files
 .DS_Store
@@ -68,3 +67,6 @@ compile_commands.json
 # Keep shared .vscode tasks/launch settings, CMakeLists.txt, presets,
 # .jucer projects, and JUCE source/dependency declarations trackable.
 /.vscode/launch-bin/
+
+/session-*/.vscode/launch-bin/
+__pycache__/

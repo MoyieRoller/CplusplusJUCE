@@ -1,0 +1,39 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Lesson — macOS",
+      "type": "lldb-dap",
+      "request": "launch",
+      "program": "${workspaceFolder}/.vscode/launch-bin/main",
+      "cwd": "${workspaceFolder}",
+      "args": [],
+      "preLaunchTask": "Prepare plugin launch",
+      "debugAdapterExecutable": "${workspaceFolder}/.vscode/lldb-dap.sh",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "name": "Lesson — Windows",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/.vscode/launch-bin/main.exe",
+      "cwd": "${workspaceFolder}",
+      "args": [],
+      "preLaunchTask": "Prepare plugin launch",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Lesson — Linux",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/.vscode/launch-bin/main",
+      "cwd": "${workspaceFolder}",
+      "args": [],
+      "preLaunchTask": "Prepare plugin launch",
+      "MIMode": "gdb",
+      "miDebuggerPath": "/usr/bin/gdb",
+      "externalConsole": false
+    }
+  ]
+}

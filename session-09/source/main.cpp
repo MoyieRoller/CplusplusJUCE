@@ -1,6 +1,6 @@
 #include <iostream>
 #include <memory>
-
+#include <cassert>
 struct Tempo
 {
     explicit Tempo(double initialBpm) : bpm(initialBpm)
@@ -11,17 +11,18 @@ struct Tempo
     double bpm;
 };
 
-void setTempo(Tempo value)
+void setTempo(Tempo value, double newBpm)
 {
-    value.bpm = 60.0;
+    value.bpm = newBpm;
 }
 
 // What does std::unique_ptr do? Example class for managing instances of Tempo
 // on heap using an own simple smart pointer.
 //
 // Work in progress (WIP) with many problems, we'll speak about that next class.
-// Copying this wrapper copies the address. Both wrappers would then try to
-// delete the same Tempo. Copy assignment also loses the destination's old address.
+// Without the deleted copy operations below, copying would copy only the address.
+// Both wrappers would then try to delete the same Tempo. Copy assignment would
+// also lose the destination's old address. Try copying now: it fails to compile.
 class ManagedTempoPointer
 {
 public:
@@ -30,6 +31,12 @@ public:
         // automatically create a new instance of Tempo on heap
         tempoPointer = new Tempo (100.0);
     }
+
+    // deleted copy constructor. we can't copy an instance of ManagedTempoPointer anymore!
+    ManagedTempoPointer (ManagedTempoPointer& other) = delete;
+
+    // deleted copy assignment operator
+    ManagedTempoPointer& operator=(const ManagedTempoPointer& other) = delete;
 
     ~ManagedTempoPointer ()
     {
@@ -40,11 +47,18 @@ public:
 
     // This function takes ownership. The caller may still have a copy of
     // the address, but only this wrapper should delete the object.
-    // What if newTempo is the address we already own? The delete below
-    // destroys that object, and we then store its dangling address.
+    // What if newTempo is the non-null address we already own? Our assertion
+    // catches this when enabled. Without it, delete destroys the object and
+    // we then store its dangling address.
     // Passing the address of a local Tempo would also make a later delete invalid.
-    void reset (Tempo * newTempo)
+    void reset (Tempo * newTempo = nullptr)
     {
+        // Reject resetting to the same non-null pointer while assertions are enabled.
+        // To disable assertions, define NDEBUG before including <cassert>, or build
+        // with -DNDEBUG (GCC/Clang) or /DNDEBUG (MSVC). The check then disappears;
+        // it does not make resetting to the same pointer safe.
+        assert (newTempo == nullptr || newTempo != tempoPointer);
+
         delete tempoPointer;
         tempoPointer = newTempo;
     }
@@ -59,7 +73,7 @@ int main()
     // end of its scope which is the end of function body of main ()
     Tempo original(120.0);
 
-    // setTempo (original, Tempo (25.0)); // uncomment, to see if this changes anything
+    // setTempo (original, 25.0); // Uncomment: does passing original by value change its BPM?
     std::cout << "Original: " << original.bpm << "\n";
     
     {
@@ -84,9 +98,8 @@ int main()
         // deletes the instance of Tempo it's currently managing.
         std::unique_ptr<Tempo> tempoPtr = std::make_unique<Tempo>(75.0);
 
-        // calling the reset function with a new instance of Tempo will
-        // delete the last managed instance and reset tempoPtr to reset
-        // the new Tempo (76.)
+        // reset deletes the previously managed Tempo and takes ownership
+        // of the new Tempo (76.0).
         tempoPtr.reset (new Tempo (76.)); 
     }
 
@@ -95,25 +108,64 @@ int main()
     ManagedTempoPointer mtp;
     mtp.reset (new Tempo (12));
 
-    // Current problems with our class ManagedTempoPointer
-    // Try one example at a time.
+    // Ownership problems and the protections we have added so far.
+    // Try one example at a time; some deliberately fail to compile or assert.
 
     // What happens to the 11 BPM Tempo when we pass the same address to reset a second time?
-    // auto tempoAssignedTwice = newTempo (11):
-    // mtp.reset (tempoAssignedTwice);
-    // mtp.reset (tempoAssignedTwice);
+    // Our assertion now stops the second reset when assertions are enabled.
+    // auto tempoAssignedTwice = new Tempo (11);
+    // mtp.reset (tempoAssignedTwice); // Deletes the old 12 BPM Tempo and takes ownership of the 11 BPM Tempo.
+    // mtp.reset (tempoAssignedTwice); // Asserts; without assertions, deletes the 11 BPM Tempo and leaves a dangling pointer.
 
-    // When we copy mtp, do we get a second Tempo or just a copy of its address?
-    // What happens when both wrappers go out of scope?
+    // Try this separately with a fresh 11 BPM allocation and without the mtp resets.
+    // unique_ptr does not protect against resetting to its own pointer: the second
+    // reset deletes the object, leaving a dangling pointer and a later invalid delete.
+    // std::unique_ptr<Tempo> tUnique;
+    // tUnique.reset (tempoAssignedTwice);
+    // tUnique.reset (tempoAssignedTwice);
+
+    // Without our deleted copy constructor, would copying mtp create a second
+    // Tempo or just copy its address? What would happen when both wrappers die?
+    // With the deleted copy constructor, the following copy fails to compile.
+    // ManagedTempoPointer copyOfMtp = mtp;
+    // std::unique_ptr<Tempo> tUnique = std::make_unique<Tempo> (12.0);
+    // std::unique_ptr<Tempo> copyOfTUnique = tUnique;
+
+    // unique_ptr cannot be copied. We also prevent copy construction of
+    // ManagedTempoPointer by deleting its copy constructor. Tempo itself is still copyable.
+    // std::unique_ptr<Tempo> tUnique = std::make_unique<Tempo> (12.0);
+    // std::unique_ptr<Tempo> copyOfTUnique = tUnique;
+
+    // This attempts copy construction of a new wrapper and fails to compile
+    // because ManagedTempoPointer's copy constructor is deleted.
     // ManagedTempoPointer copyOfMtp = mtp;
 
-    // What happens to the 100 BPM Tempo that secondMtp already owns?
+    // Copy construction creates a new object; copy assignment changes an existing one.
+    // secondMtp already owns a 100 BPM Tempo. Without our deleted copy assignment
+    // operator, assignment would overwrite its pointer and leak that Tempo.
+    // Deleting the copy constructor alone does not prevent assignment, so we
+    // delete the copy assignment operator too. The assignment below fails to compile.
     // ManagedTempoPointer secondMtp;
     // secondMtp = mtp;
-    // Check both addresses in the debugger. Did we see "Destroy 100" during assignment?
 
-    // How often do we see "Destroy 12" when we reset to nullptr twice?
+    // unique_ptr cannot be copied, but ownership can be transferred by moving.
+    // std::move enables move assignment here; the assignment transfers ownership.
+    // The Tempo object itself stays at the same address.
+    // Can our ManagedTempoPointer transfer ownership like this yet? What special
+    // member functions might we need, and what should happen to each wrapper's pointer?
+    // std::unique_ptr<Tempo> tUnique = std::make_unique<Tempo> (12.0); // tUnique points to lets say 0x1234
+    // std::unique_ptr<Tempo> secondTUnique; // Empty: holds nullptr.
+    // secondTUnique = std::move (tUnique); // secondTUnique now owns the Tempo; tUnique holds nullptr.
+
+    // Check both pointers in the debugger. secondTUnique was empty, so move
+    // assignment destroys no previous Tempo. If it had owned one, that object
+    // would have been deleted before it took ownership of tUnique's Tempo.
+    // Back to mtp: how often do we see "Destroy 12" when we reset it to nullptr twice?
     // mtp.reset (nullptr);
+    // mtp.reset (nullptr);
+
+    // The default argument nullptr in reset's declaration lets us omit the argument.
+    // mtp.reset ();
     // mtp.reset (nullptr);
 
     // What happens if we try to copy a std::unique_ptr?

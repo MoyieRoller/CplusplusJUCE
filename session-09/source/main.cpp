@@ -68,6 +68,18 @@ private:
 
 template <class T> class ManagedPointer {
 public:
+  ManagedPointer() : ptr(nullptr) {}
+  ~ManagedPointer() { delete ptr; }
+
+  ManagedPointer(ManagedPointer &other) = delete;
+
+  ManagedPointer &operator=(const ManagedPointer &other) = delete;
+
+  void reset(T *newPointer) {
+    delete ptr;
+    ptr = newPointer;
+  }
+
   T *ptr;
 
   T *get() { return ptr; }
